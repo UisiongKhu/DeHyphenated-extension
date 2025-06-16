@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "DeHyphenated",
+    "version": "0.5.0",
+    "permissions": ["storage","contextMenus","activeTab","scripting"],
+    "background": {
+       "service_worker": "menu.js",
+       "type": "module"
+    },
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["./tools/DeHyphenated.js"],
+        "type": "module"
+    }],
+    "action": {
+        "default_icon": {
+            "16": "/images/DeHyphenated_16.png",
+            "32": "/images/DeHyphenated_32.png",
+            "48": "/images/DeHyphenated_48.png",
+            "128": "/images/DeHyphenated_128.png"
+        },
+        "default_title": "Khui DeHyphenated ê siat tēng",
+        "default_popup": "popup.html"
+    }
+}

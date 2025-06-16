@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style></style>
+        <link rel="stylesheet" type="text/css" href="popup.css" />
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+        <div class="popup-container">
+            <div class="popup-header">
+                <h2 class="popup-title">DeHyphenated Siat tēng</h2>
+                <p class="popup-version">v0.5.0</p>
+            </div>
+            <div class="feature-selector">
+                <h3 class="feature-title">Kong lêng siat tēng</h3>
+                <input type="checkbox" id="UpdateWhenLoad" name="cb-update" value="UpdateWhenLoadChecked">
+                <label id="cbl-update" for="cb-update">Chū tōng ap tia̍t chu liāu</label><br>
+                <h4>Chheng tû tiān náu ‧lìn ê chu liāu</h4>
+                <button id="btn-clear" >Chheng tû</button>
+            </div>
+            <div class="dataset-container">
+                <h3 class="dataset-title">Kéng chu liāu pió</h3>
+                <div class="dataset-option-container">
+                    <input type="checkbox" id="MainList" name="cb1" value="MainListChecked">
+                    <label id="cbl1" for="cb1">Default Chu liāu</label><br>
+                    <input type="checkbox" id="SelectAll" name="cb2" value="SelectAllChecked">
+                    <label id="cbl2" for="cb2">Chiâu beh tha̍k</label><br>
+                    <input type="checkbox" id="Division" name="cb3" value="DivisionChecked">
+                    <label id="cbl3" for="cb3">Hêng chéng khu miâ</label><br>
+                    <input type="checkbox" id="Mountain" name="cb4" value="MountainChecked">
+                    <label id="cbl4" for="cb4">Soaⁿ miâ</label><br>
+                    <input type="checkbox" id="Road" name="cb5" value="RoadChecked">
+                    <label id="cbl5" for="cb5">Lō͘ miâ</label><br>
+                    <input type="checkbox" id="River" name="cb6" value="RiverChecked">
+                    <label id="cbl6" for="cb6">Khe, chúi lī siat si miâ</label><br>
+                </div>
+                <div>
+                    <textarea id="debugContainer" ></textarea>
+                </div>
+            </div>
+        </div>
+        <script src="popup.js" type="module"></script>
+    </body>
+</html>

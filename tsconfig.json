@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "es2020",         // 設定編譯後的 JavaScript 版本。
+                                // "es2020" 或 "esnext" 支援 Top-level await。
+    "module": "esnext",          // 設定模組系統。
+                                // "esnext" 或 "es2022" 支援 Top-level await 並適用於瀏覽器擴充功能。
+    "lib": ["dom", "ES2022"],    // 確保包含 DOM 類型定義和 ES2020 的庫。
+                                // "dom" 提供瀏覽器 API，"es2020" 支援新 JS 特性。
+    "esModuleInterop": true,   // 啟用 ES Modules 和 CommonJS 模組之間的互操作性，
+                                // 允許你用 `import credentials from './credentials/credentials.json'` 這種語法導入 JSON。
+    "resolveJsonModule": true, // 明確告訴 TypeScript 處理 JSON 檔案作為模組導入。
+    "moduleResolution": "node",
+
+    // --- 建議也包含的其他常用選項 ---
+    "strict": true,            // 啟用所有嚴格類型檢查選項，這有助於寫出更健壯的程式碼。
+    "skipLibCheck": true,      // 跳過所有聲明檔案的類型檢查，有時可以加速編譯或解決第三方庫的類型問題。
+    "forceConsistentCasingInFileNames": true, // 確保檔案名大小寫的一致性，避免跨平台問題。
+    "outDir": ".",        // 設定編譯後的 JavaScript 檔案輸出目錄。
+    "rootDir": ".",        // 設定 TypeScript 原始碼的根目錄（可選，如果你的源碼在 src 目錄下）。
+    "noEmitOnError": true      // 編譯出錯時不生成 JS 檔案（建議開啟）。
+  },
+  "include": [
+    "./**/*"                 // 包含哪些檔案進行編譯。假設你的 TS 源碼都在 `src` 目錄下。
+  ],
+  "exclude": [
+    "node_modules",             // 排除 `node_modules` 目錄，不編譯第三方庫。
+    "**/*.spec.ts"              // 排除測試檔案 (如果有的話)。
+  ]
+}
