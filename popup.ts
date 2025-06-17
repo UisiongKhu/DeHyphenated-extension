@@ -9,7 +9,7 @@ const sheetNames = {
     mainList: 'Main List',
     division: 'Administration Division Name List (TK)',
     road: 'Road Name List (R)',
-    //street: 'Street Name List(RK)',
+    street: 'Street Name List (RK)',
     mountain: 'Mountain Name List (S)',
     river: 'River, Dam Name List (CK, CL)',
     //tourismSpot: 'Tourism Spot Name List (KK)',
@@ -22,6 +22,15 @@ const loadText = {
     loaded: ' (Tha̍k hó sè ah)'
 }
 
+const labelText = {
+    mainList: 'Default Chu liāu',
+    division: 'Hêng chèng khu miâ',
+    road: 'Lō͘ miâ',
+    street: 'Ke miâ',
+    mountain: 'Soaⁿ miâ',
+    river: 'Khe, chúi lī siat si miâ',
+}
+
 const $featureCheckBoxs = {
     updateWhenLoad: document.getElementById('UpdateWhenLoad') as HTMLInputElement,
 }
@@ -32,6 +41,7 @@ const $checkBoxs = {
     division: document.getElementById('Division') as HTMLInputElement,
     mountain: document.getElementById('Mountain') as HTMLInputElement,
     road: document.getElementById('Road') as HTMLInputElement,
+    street: document.getElementById('Street') as HTMLInputElement,
     river: document.getElementById('River') as HTMLInputElement,
 };
 
@@ -40,6 +50,7 @@ const $checkBoxsArr = [
     $checkBoxs.mountain,
     $checkBoxs.river,
     $checkBoxs.road, 
+    $checkBoxs.street,
 ].filter(Boolean) as HTMLInputElement[];
 
 const $buttons = {
@@ -56,7 +67,8 @@ const $labels = {
     division: document.getElementById('cbl3') as HTMLLabelElement,
     mountain: document.getElementById('cbl4') as HTMLLabelElement,
     road: document.getElementById('cbl5') as HTMLLabelElement,
-    river: document.getElementById('cbl6') as HTMLLabelElement,
+    street: document.getElementById('cbl6') as HTMLLabelElement,
+    river: document.getElementById('cbl7') as HTMLLabelElement,
 };
 
 const $debugContainer = document.getElementById('debugContainer') as HTMLTextAreaElement;
@@ -66,17 +78,17 @@ var Feature = {
 }
 
 /* Load data and save it by Web Storage API  */
-async function getSheetData(sheetName: string, labelObj: HTMLLabelElement){
-    labelObj.textContent = labelObj.textContent + loadText.loading;
+async function getSheetData(sheetName: string, labelKey: keyof typeof labelText){
+    $labels[labelKey].textContent = labelText[labelKey] + loadText.loading;
     var data = await fetch(getUrlBySheetName(sheetName)).then(res=>res.json()).then(data=>{return data;});
     if(data.values){
-        labelObj.textContent = labelObj.textContent.replace(loadText.loading, loadText.loaded);
+        $labels[labelKey].textContent = labelText[labelKey] + loadText.loaded;
         await chrome.storage.local.set({[sheetName]: data});
     }else throw Error('Lia̍h bô chu liāu, chhiáⁿ kiám cha kám ū chiap tio̍h bāng lō͘.');
 }
 /* Check if data in storage by Web Storage API */
-async function updateDataAmount(sheetName?: string, labelObj?: HTMLLabelElement){
-    if(labelObj) labelObj.textContent = labelObj.textContent + loadText.checkingUpdate;
+async function updateDataAmount(sheetName?: string, labelKey?: keyof typeof labelText){
+    if(labelKey) $labels[labelKey].textContent = labelText[labelKey] + loadText.checkingUpdate;
     const res = await chrome.storage.local.get(sheetNames.amount);
     const saveAmountObj = res[sheetNames.amount];
     var data = await fetch(getUrlBySheetName(sheetNames.amount, '!A2:B100')).then(res=>res.json()).then(data=>{return data;});
@@ -103,13 +115,14 @@ async function updateDataAmount(sheetName?: string, labelObj?: HTMLLabelElement)
         }else{
             if(saveAmountObj[sheetName] !== obj[sheetName]){
                 saveAmountObj[sheetName] = obj[sheetName];
+                if(labelKey) $labels[labelKey].textContent = labelText[labelKey] + loadText.updating;
                 await updateSheetData(sheetName);
             }
         }
         await chrome.storage.local.set({[sheetNames.amount]: saveAmountObj});
     }
     
-    if(labelObj) labelObj.textContent = labelObj.textContent!.replace(loadText.checkingUpdate, loadText.loaded);
+    if(labelKey) $labels[labelKey].textContent = labelText[labelKey] + loadText.loaded;
 }
 async function updateSheetData(sheetName: string){
     var data = await fetch(getUrlBySheetName(sheetName)).then(res=>res.json()).then(data=>{return data;});
@@ -136,6 +149,7 @@ function updateSelectAllWhenCheckboxsChanged(){
         }
     }
 }
+
 const selectAllObserver = new MutationObserver(function(mutationsList,observer){
     var disabledMutationOccurredFlag = false;
     var checkedMutationOccurredFlag = false;
@@ -178,15 +192,18 @@ $buttons.clearLocalData.addEventListener('click', async (e: Event) => {
 // Data
 $checkBoxs.mainList.addEventListener('input', async (e: Event) => {
     const target = e.target as HTMLInputElement;
+
+    $labels.mainList.textContent = labelText.mainList;
+
     if(target.checked){
         /* Check if there's data in storage */
         const res = await chrome.storage.local.get(sheetNames.mainList);
         const data = res[sheetNames.mainList];
         if(data === null || data === undefined){
-            await getSheetData(sheetNames.mainList, $labels.mainList);
+            await getSheetData(sheetNames.mainList, 'mainList');
         }else{
             /* Check if the data is up-to-date, if not then it'll update sheet data */
-            if(Feature.updateWhenLoad) await updateDataAmount(sheetNames.mainList, $labels.mainList);
+            if(Feature.updateWhenLoad) await updateDataAmount(sheetNames.mainList, 'mainList');
             else $labels.mainList.textContent = $labels.mainList.textContent + loadText.loaded;
         }
     }
@@ -205,6 +222,8 @@ $checkBoxs.selectAll.addEventListener('input',async (e: Event) => {
         $checkBoxs.river.dispatchEvent(triggerEvent);
         $checkBoxs.road.checked = true;
         $checkBoxs.road.dispatchEvent(triggerEvent);
+        $checkBoxs.street.checked = true;
+        $checkBoxs.street.dispatchEvent(triggerEvent);
         await chrome.storage.local.set({selectAll: true});
     }else{
         $checkBoxs.division.checked = false;
@@ -215,6 +234,8 @@ $checkBoxs.selectAll.addEventListener('input',async (e: Event) => {
         $checkBoxs.river.dispatchEvent(triggerEvent);
         $checkBoxs.road.checked = false;
         $checkBoxs.road.dispatchEvent(triggerEvent);
+        $checkBoxs.street.checked = false;
+        $checkBoxs.street.dispatchEvent(triggerEvent);
         await chrome.storage.local.set({selectAll: false});
     }
 });
@@ -227,9 +248,9 @@ Object.keys($checkBoxs).forEach(key => {
     if(key !== 'mainList' && key !== 'selectAll'){
         checkbox.addEventListener('input', async (e: Event) => {
             const target = e.target as HTMLInputElement;
-            while(label.textContent?.includes(loadText.loaded)){
-                label.textContent = label.textContent!.replace(loadText.loaded,'');
-            }
+
+            label.textContent = labelText[key as keyof typeof labelText];
+
             if(target.checked){
                 checkbox.disabled = true;
 
@@ -237,19 +258,16 @@ Object.keys($checkBoxs).forEach(key => {
                 const data = res[sheetname];
                 /* Check if there's data in storage */
                 if(data === null || data === undefined){
-                    await getSheetData(sheetname, label);
+                    await getSheetData(sheetname, key as keyof typeof labelText);
                 }else{
                     /* Check if the data is up-to-date, if not then it'll update sheet data */
-                    if(Feature.updateWhenLoad) await updateDataAmount(sheetname, label);
-                    else label.textContent = label.textContent + loadText.loaded;
+                    if(Feature.updateWhenLoad) await updateDataAmount(sheetname, key as keyof typeof labelText);
+                    else label.textContent = labelText[key as keyof typeof labelText] + loadText.loaded;
                 }
                 checkbox.disabled = false;
                 await chrome.storage.local.set({[key]: true});
             }else{
-                while(label.textContent?.includes(loadText.loaded)){
-                    label.textContent = label.textContent!.replace(loadText.loaded,'');
-                }
-                label.textContent = label.textContent!.replace(loadText.loading,'');
+                label.textContent = labelText[key as keyof typeof labelText];
                 await chrome.storage.local.remove(key);
             }
             updateSelectAllWhenCheckboxsChanged();
@@ -266,8 +284,7 @@ const loadSavedData = async () => {
     if(Feature.updateWhenLoad===true){
         $featureCheckBoxs.updateWhenLoad.checked = true;
     }else{
-        await chrome.storage.local.set({updateWhenLoad: true});
-        $featureCheckBoxs.updateWhenLoad.checked = true;
+        $featureCheckBoxs.updateWhenLoad.checked = false;
     }
 
     for(const key of Object.keys($checkBoxs) as Array<keyof typeof $checkBoxs>){
@@ -277,6 +294,7 @@ const loadSavedData = async () => {
             const res = await chrome.storage.local.get(key).catch(e=>{console.log(e.message)});
             const data = (res as any)[key];
             checkbox.checked = data;
+            checkbox.dispatchEvent(defaultEvent);
         }
     }
 }
@@ -284,13 +302,14 @@ const loadSavedData = async () => {
 const init = async () => {
     $checkBoxs.mainList.disabled = true;
     $checkBoxs.mainList.checked = true;
+    $labels.mainList.textContent = labelText.mainList;
     const defaultEvent = new Event('input');
     $checkBoxs.mainList.dispatchEvent(defaultEvent);
-    await loadSavedData();
-    await updateDataAmount();
     Object.keys($checkBoxs).forEach(key => {
         selectAllObserver.observe(($checkBoxs as any)[key], selectAllObserverConfig);
     });
+    await loadSavedData();
+    await updateDataAmount();
 }
 
 init();
